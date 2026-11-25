@@ -13,9 +13,18 @@ const budgetRoutes = require("./routes/budgetRoutes");
 
 const app = express();
 
+// CORS CONFIGURATION
+const allowedOrigins = [
+  "http://localhost:5174",
+  "http://localhost:5173",
+  "https://client-tawny-six-73.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -42,13 +51,18 @@ app.use("/api/budgets", budgetRoutes);
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(
-      `SmartKharcha Backend running on http://localhost:${PORT}`
-    );
-  });
+    app.listen(PORT, () => {
+      console.log(
+        `SmartKharcha Backend running on port ${PORT}`
+      );
+    });
+  } catch (error) {
+    console.error("Server startup failed:", error);
+    process.exit(1);
+  }
 };
 
 startServer();
